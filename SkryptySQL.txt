@@ -1,0 +1,187 @@
+/*---------------DATA BASE------------------------*/
+DROP DATABASE IF EXISTS AMStestENV;
+
+IF NOT EXISTS 
+   (
+     SELECT name FROM master.dbo.sysdatabases 
+     WHERE name = N'AMStestENV'
+    )
+BEGIN
+	CREATE DATABASE AMStestENV
+	SELECT 'New Database is Created'
+END
+
+USE AMStestENV;
+/*-----------------------------------------------*/
+
+/*---------------TABLES--------------------------*/
+CREATE TABLE employees (
+    emp_no      INT PRIMARY KEY NOT NULL,
+    birth_date  DATE            NOT NULL,
+    first_name  VARCHAR(14)     NOT NULL,
+    last_name   VARCHAR(16)     NOT NULL,
+    gender      CHAR(1)         NOT NULL,    
+    hire_date   DATE            NOT NULL,
+);
+
+CREATE TABLE departments (
+    dept_no     CHAR(4)  PRIMARY KEY  NOT NULL,
+    dept_name   VARCHAR(40)   UNIQUE  NOT NULL,
+);
+
+CREATE TABLE dept_manager (
+   emp_no       INT             NOT NULL,
+   dept_no      CHAR(4)         NOT NULL,
+   from_date    DATE            NOT NULL,
+   to_date      DATE            NOT NULL,
+   PRIMARY KEY(emp_no, dept_no),
+   FOREIGN KEY (emp_no) REFERENCES employees(emp_no) ON DELETE CASCADE,
+   FOREIGN KEY (dept_no) REFERENCES departments(dept_no) ON DELETE CASCADE
+); 
+
+CREATE TABLE dept_emp (
+   emp_no       INT             NOT NULL,
+   dept_no      CHAR(4)         NOT NULL,
+   from_date    DATE            NOT NULL,
+   to_date      DATE            NOT NULL,
+   PRIMARY KEY(emp_no, dept_no),
+   FOREIGN KEY (emp_no) REFERENCES employees(emp_no) ON DELETE CASCADE,
+   FOREIGN KEY (dept_no) REFERENCES departments(dept_no) ON DELETE CASCADE
+); 
+
+CREATE TABLE titles (
+   emp_no       INT             NOT NULL,
+   title        VARCHAR(50)     NOT NULL,
+   from_date    DATE            NOT NULL,
+   to_date      DATE,
+   PRIMARY KEY(emp_no,title, from_date),
+   FOREIGN KEY (emp_no) REFERENCES employees(emp_no) ON DELETE CASCADE,
+); 
+
+CREATE TABLE salaries (
+   emp_no       INT             NOT NULL,
+   salary       INT             NOT NULL,
+   from_date    DATE            NOT NULL,
+   to_date      DATE			NOT NULL,
+   PRIMARY KEY(emp_no, from_date),
+   FOREIGN KEY (emp_no) REFERENCES employees(emp_no) ON DELETE CASCADE,
+);
+/*-----------------------------------------------*/
+
+/*---------------DATA INSERTION------------------*/
+INSERT INTO departments VALUES 
+('d001','Marketing'),
+('d002','Finance'),
+('d003','Human Resources'),
+('d004','Production'),
+('d005','Development'),
+('d006','Quality Management'),
+('d007','Sales'),
+('d008','Research'),
+('d009','Customer Service');
+
+BULK INSERT employees
+FROM 'D:\AMS\test_db-master\employees.csv'
+WITH (
+	FIRSTROW = 1,
+	FIELDTERMINATOR = ',',
+	ROWTERMINATOR = '\n'
+)
+GO
+
+BULK INSERT dept_emp
+FROM 'D:\AMS\test_db-master\dept_emp.csv'
+WITH (
+	FIRSTROW = 1,
+	FIELDTERMINATOR = ',',
+	ROWTERMINATOR = '\n'
+)
+GO
+
+BULK INSERT dept_manager
+FROM 'D:\AMS\test_db-master\dept_manager.csv'
+WITH (
+	FIRSTROW = 1,
+	FIELDTERMINATOR = ',',
+	ROWTERMINATOR = '\n'
+)
+GO
+
+BULK INSERT titles
+FROM 'D:\AMS\test_db-master\load_titles.csv'
+WITH (
+	FIRSTROW = 1,
+	FIELDTERMINATOR = ',',
+	ROWTERMINATOR = '\n'
+)
+GO
+
+BULK INSERT salaries
+FROM 'D:\test_db-master\load_salaries1.csv'
+WITH (
+	FIRSTROW = 1,
+	FIELDTERMINATOR = ',',
+	ROWTERMINATOR = '\n'
+)
+GO
+
+BULK INSERT salaries
+FROM 'D:\test_db-master\load_salaries2.csv'
+WITH (
+	FIRSTROW = 1,
+	FIELDTERMINATOR = ',',
+	ROWTERMINATOR = '\n'
+)
+GO
+
+BULK INSERT salaries
+FROM 'D:\test_db-master\load_salaries3.csv'
+WITH (
+	FIRSTROW = 1,
+	FIELDTERMINATOR = ',',
+	ROWTERMINATOR = '\n'
+)
+GO
+/*-----------------------------------------------*/
+
+
+/*---------------VIEWS---------------------------*/
+CREATE VIEW DepartmentsView AS
+SELECT employees.first_name,
+	   employees.last_name,
+	   departments.dept_name
+FROM employees
+JOIN dept_manager
+ON employees.emp_no = dept_manager.emp_no
+JOIN departments
+ON departments.dept_no = dept_manager.dept_no
+
+CREATE VIEW EmployeesView AS
+SELECT employees.emp_no,
+	   employees.birth_date,
+	   employees.first_name,
+	   employees.last_name,
+	   employees.gender,
+	   employees.hire_date,
+	   salaries.salary,
+	   titles.title
+FROM employees
+JOIN salaries
+ON employees.emp_no = salaries.emp_no
+JOIN titles
+ON titles.emp_no = salaries.emp_no
+
+CREATE VIEW DepartmentsManagerNumber AS
+SELECT employees.first_name,
+	   employees.last_name,
+	   employees.emp_no,
+	   departments.dept_name
+FROM employees
+JOIN dept_manager
+ON employees.emp_no = dept_manager.emp_no
+JOIN departments
+ON dept_manager.dept_no = departments.dept_no
+/*-----------------------------------------------*/
+
+/*---------------OTHERS--------------------------*/
+/*-----------------------------------------------*/
