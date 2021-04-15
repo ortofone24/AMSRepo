@@ -1,0 +1,51 @@
+<table class="table table-hover">
+  <thead class="table-active table-bordered table-striped text-center">
+    <tr>
+      <th *ngFor="let head of headElements" scope="col">{{head}} </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let el of employees">
+      <td>{{el.empNo}}</td>
+      <td>{{el.firstName}}</td>
+      <td>{{el.lastName}}</td>
+      <td>{{el.gender}}</td>
+      <td>{{el.salary}}</td>
+      <td>{{el.title}}</td>
+      <td>{{el.hireDate | date:"MM/dd/yyyy"}}</td>
+      <td>{{el.birthDate | date:"MM/dd/yyyy"}}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="container">
+        <button
+        class="btn btn-outline-secondary mr-3"
+        [disabled]="previousPage === null"
+        type="button"
+        (click)="previousPageMethod()"
+      >
+      PreviousPage
+      </button>
+      <button
+            class="btn btn-outline-secondary mr-3"
+            type="button"
+            (click)="nextPageMethod()"
+      >
+      NextPage
+      </button>
+
+      <button
+            class="btn btn-outline-secondary mr-3"
+            type="button"
+            (click)="firstPageMethod()"
+      >
+      FirstPage
+      </button>
+      <button
+            class="btn btn-outline-secondary mr-3"
+            type="button"
+            (click)="lastPageMethod()"
+      >
+      LastPage
+      </button>
+</div>
