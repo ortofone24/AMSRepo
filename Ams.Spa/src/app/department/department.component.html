@@ -1,0 +1,14 @@
+<table class="table table-hover mt-0">
+  <thead class="table-active table-bordered table-striped text-center">
+    <tr>
+      <th *ngFor="let head of headElements" scope="col">{{head}} </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let el of departments">
+      <td>{{el.deptName}}</td>
+      <td>{{el.firstName}}</td>
+      <td>{{el.lastName}}</td>
+    </tr>
+  </tbody>
+</table>
